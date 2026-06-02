@@ -1,27 +1,47 @@
 import prisma from "../../config/prisma.js";
 
+/**
+ * Create member
+ */
 export const createMember = async (data) => {
-  const member = await prisma.member.create({
+  return await prisma.member.create({
     data: {
       firstName: data.firstName,
       lastName: data.lastName,
-      phone: data.phone,
-      nationalId: data.nationalId,
+      phone: data.phone || null,
+      nationalId: data.nationalId || null,
       status: "PENDING",
     },
   });
-
-  return member;
 };
 
-export const getAllMembers = async () => {
-  return prisma.member.findMany({
+/**
+ * Get all members
+ */
+export const getMembers = async () => {
+  return await prisma.member.findMany({
     orderBy: { createdAt: "desc" },
   });
 };
 
+/**
+ * Get member by ID
+ */
 export const getMemberById = async (id) => {
-  return prisma.member.findUnique({
+  return await prisma.member.findUnique({
     where: { id },
+  });
+};
+
+
+/**
+ * Attach a user to a member (hybrid onboarding)
+ */
+export const attachUserToMember = async (memberId, userId) => {
+  return await prisma.member.update({
+    where: { id: memberId },
+    data: {
+      userId,
+    },
   });
 };

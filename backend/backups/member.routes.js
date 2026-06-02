@@ -4,7 +4,6 @@ import {
   createMemberController,
   getMembersController,
   getMemberController,
-  attachUserController,
 } from "./member.controller.js";
 
 import { authenticate } from "../../middleware/auth.middleware.js";
@@ -20,7 +19,7 @@ router.post(
   createMemberController
 );
 
-// Admin + Secretary + Treasurer can view all members
+// Admin + Treasurer + Secretary can view all members
 router.get(
   "/",
   authenticate,
@@ -34,14 +33,6 @@ router.get(
   authenticate,
   authorizeRoles("ADMIN", "SECRETARY"),
   getMemberController
-);
-
-// Attach user to member (hybrid onboarding)
-router.post(
-  "/:id/attach-user",
-  authenticate,
-  authorizeRoles("ADMIN", "SECRETARY"),
-  attachUserController
 );
 
 export default router;
