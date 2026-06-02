@@ -5,6 +5,8 @@ import morgan from "morgan";
 
 import authRoutes from "./routes/auth.routes.js";
 
+import memberRoutes from "./modules/members/member.routes.js";
+
 const app = express();
 
 // Middleware
@@ -29,5 +31,7 @@ app.use((err, req, res, next) => {
     message: err.message || "Internal server error",
   });
 });
+
+app.use("/api/v1/members", memberRoutes);
 
 export default app;
