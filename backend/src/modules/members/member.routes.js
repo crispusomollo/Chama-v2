@@ -5,43 +5,60 @@ import {
   getMembersController,
   getMemberController,
   attachUserController,
+  approveMember,
+  suspendMember,
 } from "./member.controller.js";
 
 import { authenticate } from "../../middleware/auth.middleware.js";
-import { authorizeRoles } from "../../middleware/role.middleware.js";
+import { authorizePermissions } from "../../middleware/permission.middleware.js";
 
 const router = express.Router();
 
-// Admin + Secretary can create members
+// CREATE MEMBER
 router.post(
   "/",
   authenticate,
-  authorizeRoles("ADMIN", "SECRETARY"),
+  authorizePermissions("member:create"),
   createMemberController
 );
 
-// Admin + Secretary + Treasurer can view all members
+// LIST MEMBERS
 router.get(
   "/",
   authenticate,
-  authorizeRoles("ADMIN", "SECRETARY", "TREASURER"),
+  authorizePermissions("member:read"),
   getMembersController
 );
 
-// Admin + Secretary can view single member
+// GET SINGLE MEMBER
 router.get(
   "/:id",
   authenticate,
-  authorizeRoles("ADMIN", "SECRETARY"),
+  authorizePermissions("member:read"),
   getMemberController
 );
 
-// Attach user to member (hybrid onboarding)
+// ATTACH USER
 router.post(
   "/:id/attach-user",
   authenticate,
-  authorizeRoles("ADMIN", "SECRETARY"),
+  authorizePermissions("member:attach_user"),
   attachUserController
+);
+
+
+router.patch(
+  "/:id/approve",
+  authenticate,
+  authorizePermissions("member:approve"),
+  approveMember
+);
+
+router.patch(
+  "/:id/suspend",
+  authenticate,
+  authorizePermissions("member:suspend"),
+  suspendMember
 );
 
 export default router;

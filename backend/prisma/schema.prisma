@@ -17,6 +17,7 @@ enum MemberStatus {
   PENDING
   ACTIVE
   SUSPENDED
+  REJECTED
 }
 
 enum RoleType {

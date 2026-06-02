@@ -1,5 +1,7 @@
 import { createMember, getMembers, getMemberById, attachUserToMember } from "./member.service.js";
 
+import prisma from "../../config/prisma.js";
+import { auditLog } from "../../middleware/audit.middleware.js";
 
 /**
  * Create a new member
@@ -71,7 +73,7 @@ export const getMemberController = async (req, res) => {
 
 /**
  * Attach user to member
- */
+
 export const attachUserController = async (req, res) => {
   try {
     const { id } = req.params;
@@ -96,5 +98,77 @@ export const attachUserController = async (req, res) => {
       success: false,
       message: error.message || "Failed to attach user",
     });
+  }
+};
+ */
+
+
+/* AUDIT ATTACH USER */
+export const attachUserController = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { userId } = req.body;
+
+    const member = await prisma.member.update({
+      where: { id },
+      data: { userId },
+    });
+
+    await auditLog({
+      userId: req.user.userId,
+      action: "ATTACH_USER",
+      entity: "Member",
+      entityId: id,
+      newValues: { userId },
+      req,
+    });
+
+    res.json({
+      success: true,
+      message: "User attached to member successfully",
+      data: member,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+
+export const approveMember = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const member = await prisma.member.update({
+      where: { id },
+      data: { status: "ACTIVE" },
+    });
+
+    res.json({
+      success: true,
+      message: "Member approved",
+      data: member,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+
+export const suspendMember = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const member = await prisma.member.update({
+      where: { id },
+      data: { status: "SUSPENDED" },
+    });
+
+    res.json({
+      success: true,
+      message: "Member suspended",
+      data: member,
+    });
+  } catch (err) {
+    next(err);
   }
 };
