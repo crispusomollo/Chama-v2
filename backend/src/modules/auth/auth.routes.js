@@ -8,10 +8,15 @@ import {
   logoutController,
   logoutAllController,
   getSessionsController,
+  unlockUserController,
 } from "./auth.controller.js";
 
 import { authenticate }
   from "../../middleware/auth.middleware.js";
+
+import {
+  authorizePermissions,
+} from "../../middleware/permission.middleware.js";
 
 const router = express.Router();
 
@@ -55,7 +60,6 @@ router.get(
   getSessionsController
 );
 
-/*************************************************
 router.post(
   "/users/:userId/unlock",
   authenticate,
@@ -64,6 +68,6 @@ router.post(
   ),
   unlockUserController
 );
-**************************************************/
+
 
 export default router;

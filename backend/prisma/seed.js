@@ -27,20 +27,45 @@ async function main() {
   }
 
   const permissions = [
-  "members:create",
-  "members:read",
-  "members:update",
-  "members:delete",
-  "member:create",
-  "member:read",
-  "member:update",
-  "member:delete",
-  "member:attach_user",
-  "users:manage",
-  "roles:manage",
-  "member:approve",
-  "member:suspend",
-];
+    // Members
+    "member.create",
+    "member.view",
+    "member.update",
+    "member.delete",
+    "member.attach_user",
+    "member.approve",
+    "member.suspend",
+
+    // Contributions
+    "contribution.create",
+    "contribution.view",
+    "contribution.update",
+    "contribution.delete",
+    "contribution.approve",
+
+    // Loans
+    "loan.create",
+    "loan.view",
+    "loan.approve",
+    "loan.disburse",
+
+    // Repayments
+    "repayment.create",
+    "repayment.view",
+    "repayment.reverse",
+
+    // Users
+    "user.create",
+    "user.view",
+    "user.unlock",
+    "user.assign_role",
+    "user.remove_role",
+    "user.unlock",
+
+    // Audits
+    "audit.view",
+
+  ];
 
 for (const name of permissions) {
   await prisma.permission.upsert({
@@ -54,10 +79,38 @@ for (const name of permissions) {
 }
 
 const rolePermissions = {
+
   ADMIN: permissions,
-  SECRETARY: ["members:create", "members:read", "members:update", "member:attach_user","member:approve"],
-  TREASURER: ["members:read"],
-  MEMBER: ["member:read"],
+
+  SECRETARY: [
+    "member.create",
+    "member.view",
+    "member.update",
+    "member.attach_user",
+    "member.approve",
+  ],
+
+  TREASURER: [
+    "member.view",
+
+    "contribution.create",
+    "contribution.view",
+    "contribution.approve",
+
+    "loan.view",
+  ],
+
+  AUDITOR: [
+    "member.view",
+    "contribution.view",
+    "loan.view",
+    "repayment.view",
+    "audit.view",
+  ],
+
+  MEMBER: [
+    "member.view",
+  ],
 };
 
 for (const roleName of Object.keys(rolePermissions)) {
@@ -67,6 +120,13 @@ for (const roleName of Object.keys(rolePermissions)) {
     const perm = await prisma.permission.findUnique({
       where: { name: permName },
     });
+
+    if (!perm) {
+      console.log(
+        `Permission not found: ${permName}`
+      );
+        continue;
+    }
 
     await prisma.rolePermission.upsert({
       where: {

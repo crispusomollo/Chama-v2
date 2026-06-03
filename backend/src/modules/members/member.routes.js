@@ -18,7 +18,8 @@ const router = express.Router();
 router.post(
   "/",
   authenticate,
-  authorizePermissions("member:create"),
+  /*authorizePermissions("member:create"),*/
+  authorizePermissions("member.create"),
   createMemberController
 );
 
@@ -26,7 +27,8 @@ router.post(
 router.get(
   "/",
   authenticate,
-  authorizePermissions("member:read"),
+  /*authorizePermissions("member:read"),*/
+  authorizePermissions("member.view"),
   getMembersController
 );
 
@@ -34,7 +36,8 @@ router.get(
 router.get(
   "/:id",
   authenticate,
-  authorizePermissions("member:read"),
+  /*authorizePermissions("member:read"),*/
+  authorizePermissions("member.view"),
   getMemberController
 );
 
@@ -42,7 +45,8 @@ router.get(
 router.post(
   "/:id/attach-user",
   authenticate,
-  authorizePermissions("member:attach_user"),
+  /*authorizePermissions("member:attach_user"),*/
+  authorizePermissions("member.attach_user"),
   attachUserController
 );
 
@@ -50,14 +54,14 @@ router.post(
 router.patch(
   "/:id/approve",
   authenticate,
-  authorizePermissions("member:approve"),
+  authorizePermissions("member.approve"),
   approveMember
 );
 
 router.patch(
   "/:id/suspend",
   authenticate,
-  authorizePermissions("member:suspend"),
+  authorizePermissions("member.suspend"),
   suspendMember
 );
 

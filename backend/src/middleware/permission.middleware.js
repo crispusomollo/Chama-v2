@@ -1,48 +1,48 @@
 import prisma from "../config/prisma.js";
 
-export const authorizePermissions = (...requiredPermissions) => {
-  return async (req, res, next) => {
+export const authorizePermissions =
+  (...permissions) =>
+  async (req, res, next) => {
     try {
-      const userId = req.user.userId;
-
-      const userRoles = await prisma.userRole.findMany({
-        where: { userId },
-        include: {
-          role: {
-            include: {
-              permissions: {
-                include: { permission: true },
+      const userRoles =
+        await prisma.userRole.findMany({
+          where: {
+            userId: req.user.userId,
+          },
+          include: {
+            role: {
+              include: {
+                permissions: {
+                  include: {
+                    permission: true,
+                  },
+                },
               },
             },
           },
-        },
-      });
-
-      const userPermissions = new Set();
-
-      userRoles.forEach((ur) => {
-        ur.role.permissions.forEach((rp) => {
-          userPermissions.add(rp.permission.name);
         });
-      });
 
-      const hasPermission = requiredPermissions.every((p) =>
-        userPermissions.has(p)
-      );
+      const userPermissions =
+        userRoles.flatMap((r) =>
+          r.role.permissions.map(
+            (p) => p.permission.name
+          )
+        );
 
-      if (!hasPermission) {
+      const allowed =
+        permissions.every((p) =>
+          userPermissions.includes(p)
+        );
+
+      if (!allowed) {
         return res.status(403).json({
           success: false,
-          message: "Insufficient permissions",
+          message: "Permission denied",
         });
       }
 
       next();
     } catch (error) {
-      return res.status(500).json({
-        success: false,
-        message: "Permission check failed",
-      });
+      next(error);
     }
   };
-};

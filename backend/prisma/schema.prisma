@@ -31,7 +31,9 @@ model User {
   email         String      @unique
   passwordHash  String
   status        UserStatus  @default(ACTIVE)
+
   failedLoginAttempts Int   @default(0)
+  lockedUntil   DateTime?
 
   roles         UserRole[]
   sessions      Session[]
@@ -39,8 +41,7 @@ model User {
 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-  lockedUntil   DateTime?
-
+  
   member Member?
 }
 

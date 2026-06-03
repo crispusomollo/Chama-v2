@@ -9,6 +9,9 @@ import authRoutes
 
 import memberRoutes from "./modules/members/member.routes.js";
 
+import userRoutes
+  from "./modules/users/user.routes.js";
+
 const app = express();
 
 // Middleware
@@ -17,7 +20,7 @@ app.use(cors());
 app.use(helmet());
 app.use(morgan("dev"));
 
-app.use("/api/v1/auth", authRoutes);
+
 
 // Health check
 app.get("/health", (req, res) => {
@@ -34,6 +37,8 @@ app.use((err, req, res, next) => {
   });
 });
 
+app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/members", memberRoutes);
+app.use("/api/v1/users", userRoutes);
 
 export default app;
