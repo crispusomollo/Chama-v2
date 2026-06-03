@@ -35,6 +35,7 @@ async function main() {
     "member.attach_user",
     "member.approve",
     "member.suspend",
+    "member.activate",
 
     // Contributions
     "contribution.create",

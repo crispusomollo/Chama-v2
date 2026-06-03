@@ -1,44 +1,53 @@
 import jwt from "jsonwebtoken";
+import prisma from "../config/prisma.js";
 
-export const authenticate = (
-  req,
-  res,
-  next
-) => {
+export const authenticate = async (req, res, next) => {
   try {
-    const header =
-      req.headers.authorization;
+    const header = req.headers.authorization;
 
-    if (
-      !header ||
-      !header.startsWith(
-        "Bearer "
-      )
-    ) {
+    if (!header || !header.startsWith("Bearer ")) {
       return res.status(401).json({
         success: false,
-        message:
-          "No token provided",
+        message: "No token provided",
       });
     }
 
-    const token =
-      header.split(" ")[1];
+    const token = header.split(" ")[1];
 
-    const decoded =
-      jwt.verify(
-        token,
-        process.env.JWT_SECRET
-      );
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    req.user = decoded;
+    // 🔥 IMPORTANT: fetch real user from DB
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.userId },
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        status: true,
+      },
+    });
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // 🔥 enriched request user object
+    req.user = {
+      userId: user.id,
+      email: user.email,
+      username: user.username,
+      role: decoded.role,
+      status: user.status, // 👈 THIS IS WHAT ENABLES YOUR RULES
+    };
 
     next();
-  } catch {
+  } catch (error) {
     return res.status(401).json({
       success: false,
-      message:
-        "Invalid or expired token",
+      message: "Invalid or expired token",
     });
   }
 };

@@ -19,6 +19,8 @@ import auditRoutes from "./modules/audit/audit.routes.js";
 
 import dashboardRoutes from "./modules/dashboard/dashboard.routes.js";
 
+import memberWorkflowRoutes from "./modules/members/member.workflow.routes.js";
+
 const app = express();
 
 // Middleware
@@ -56,5 +58,7 @@ app.use(
 app.use("/api/v1/audit", auditRoutes);
 
 app.use("/api/v1/dashboard", dashboardRoutes);
+
+app.use("/api/v1/member-workflow", memberWorkflowRoutes);
 
 export default app;

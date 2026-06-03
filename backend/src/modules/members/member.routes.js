@@ -10,6 +10,7 @@ import {
 } from "./member.controller.js";
 
 import { authenticate } from "../../middleware/auth.middleware.js";
+import { requireActiveMember } from "../../middleware/memberStatus.middleware.js";
 import { authorizePermissions } from "../../middleware/permission.middleware.js";
 
 const router = express.Router();
@@ -27,6 +28,7 @@ router.post(
 router.get(
   "/",
   authenticate,
+  requireActiveMember,
   /*authorizePermissions("member:read"),*/
   authorizePermissions("member.view"),
   getMembersController
