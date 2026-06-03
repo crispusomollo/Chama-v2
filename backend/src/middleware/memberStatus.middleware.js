@@ -1,15 +1,15 @@
 export const requireActiveMember = (req, res, next) => {
   try {
-    const user = req.user;
+    const { memberStatus } = req.user;
 
-    if (!user) {
-      return res.status(401).json({
+    if (!req.user.memberId) {
+      return res.status(403).json({
         success: false,
-        message: "Unauthorized",
+        message: "No member profile linked",
       });
     }
 
-    if (user.status !== "ACTIVE") {
+    if (memberStatus !== "ACTIVE") {
       return res.status(403).json({
         success: false,
         message: "Member account is not active",

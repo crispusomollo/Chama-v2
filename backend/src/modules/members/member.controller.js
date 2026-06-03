@@ -175,7 +175,7 @@ export const attachUserController = async (req, res, next) => {
 };*/
 
 
-export const approveMember = async (req, res, next) => {
+/*/export const approveMember = async (req, res, next) => {
   try {
     const { id } = req.params;
 
@@ -218,6 +218,51 @@ export const approveMember = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
+};*/
+
+export const approveMember = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const member = await prisma.member.findUnique({
+      where: { id },
+    });
+
+    if (!member) {
+      return res.status(404).json({
+        success: false,
+        message: "Member not found",
+      });
+    }
+
+    if (member.status === "ACTIVE") {
+      return res.status(400).json({
+        success: false,
+        message: "Already active",
+      });
+    }
+
+    const updated = await prisma.member.update({
+      where: { id },
+      data: { status: "ACTIVE" },
+    });
+
+    await logAudit({
+      userId: req.user.userId,
+      action: "MEMBER_APPROVED",
+      entity: "MEMBER",
+      entityId: id,
+      req,
+    });
+
+    res.json({
+      success: true,
+      message: "Member approved",
+      data: updated,
+    });
+  } catch (err) {
+    next(err);
+  }
 };
 
 
@@ -241,7 +286,7 @@ export const approveMember = async (req, res, next) => {
 };*/
 
 
-export const suspendMember = async (req, res, next) => {
+/*export const suspendMember = async (req, res, next) => {
   try {
     const { id } = req.params;
 
@@ -279,6 +324,52 @@ export const suspendMember = async (req, res, next) => {
     res.json({
       success: true,
       message: "Member suspended successfully",
+      data: updated,
+    });
+  } catch (err) {
+    next(err);
+  }
+};*/
+
+
+export const suspendMember = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const member = await prisma.member.findUnique({
+      where: { id },
+    });
+
+    if (!member) {
+      return res.status(404).json({
+        success: false,
+        message: "Member not found",
+      });
+    }
+
+    if (member.status === "SUSPENDED") {
+      return res.status(400).json({
+        success: false,
+        message: "Already suspended",
+      });
+    }
+
+    const updated = await prisma.member.update({
+      where: { id },
+      data: { status: "SUSPENDED" },
+    });
+
+    await logAudit({
+      userId: req.user.userId,
+      action: "MEMBER_SUSPENDED",
+      entity: "MEMBER",
+      entityId: id,
+      req,
+    });
+
+    res.json({
+      success: true,
+      message: "Member suspended",
       data: updated,
     });
   } catch (err) {

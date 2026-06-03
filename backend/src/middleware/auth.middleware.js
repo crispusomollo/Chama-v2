@@ -16,14 +16,13 @@ export const authenticate = async (req, res, next) => {
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // 🔥 IMPORTANT: fetch real user from DB
+    // 1. Get user (identity only)
     const user = await prisma.user.findUnique({
       where: { id: decoded.userId },
       select: {
         id: true,
         email: true,
         username: true,
-        status: true,
       },
     });
 
@@ -34,13 +33,25 @@ export const authenticate = async (req, res, next) => {
       });
     }
 
-    // 🔥 enriched request user object
+    // 2. Get member (business state source of truth)
+    const member = await prisma.member.findFirst({
+      where: { userId: user.id },
+      select: {
+        id: true,
+        status: true,
+        role: true,
+      },
+    });
+
     req.user = {
       userId: user.id,
       email: user.email,
       username: user.username,
       role: decoded.role,
-      status: user.status, // 👈 THIS IS WHAT ENABLES YOUR RULES
+
+      // 🔥 NEW SOURCE OF TRUTH
+      memberId: member?.id || null,
+      memberStatus: member?.status || "PENDING",
     };
 
     next();
