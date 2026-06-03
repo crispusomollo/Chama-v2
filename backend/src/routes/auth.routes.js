@@ -4,6 +4,8 @@ import { authenticate } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
+console.log("OLD AUTH ROUTES LOADED");
+
 router.post("/register", register);
 router.post("/login", login);
 

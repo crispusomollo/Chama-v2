@@ -3,12 +3,23 @@ import { createMember, getMembers, getMemberById, attachUserToMember } from "./m
 import prisma from "../../config/prisma.js";
 import { auditLog } from "../../middleware/audit.middleware.js";
 
+import { logAudit }
+  from "../../utils/audit.js";
+
 /**
  * Create a new member
  */
 export const createMemberController = async (req, res) => {
   try {
     const member = await createMember(req.body);
+
+    await logAudit({
+      userId: req.user.userId,
+      action: "CREATE",
+      entity: "MEMBER",
+      entityId: member.id,
+      req,
+    });
 
     return res.status(201).json({
       success: true,
@@ -114,12 +125,22 @@ export const attachUserController = async (req, res, next) => {
       data: { userId },
     });
 
+    /*
     await auditLog({
       userId: req.user.userId,
       action: "ATTACH_USER",
       entity: "Member",
       entityId: id,
       newValues: { userId },
+      req,
+    });
+    */
+
+    await logAudit({
+      userId: req.user.userId,
+      action: "ATTACH_USER",
+      entity: "MEMBER",
+      entityId: member.id,
       req,
     });
 

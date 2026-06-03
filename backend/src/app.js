@@ -3,7 +3,9 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 
-import authRoutes from "./routes/auth.routes.js";
+//import authRoutes from "./modules/auth/auth.routes.js";
+import authRoutes
+  from "./modules/auth/auth.routes.js";
 
 import memberRoutes from "./modules/members/member.routes.js";
 
