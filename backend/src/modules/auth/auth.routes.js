@@ -55,6 +55,7 @@ router.get(
   getSessionsController
 );
 
+/*************************************************
 router.post(
   "/users/:userId/unlock",
   authenticate,
@@ -63,5 +64,6 @@ router.post(
   ),
   unlockUserController
 );
+**************************************************/
 
 export default router;

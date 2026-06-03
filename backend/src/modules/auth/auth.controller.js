@@ -257,7 +257,7 @@ export const unlockUserController =
       next(error);
     }
   };
-  
+
 
 export const refreshTokenController =
   async (req, res, next) => {
@@ -289,10 +289,20 @@ export const refreshTokenController =
         .update(refreshToken)
         .digest("hex");
 
-      const session =
+      /*const session =
         await prisma.session.findFirst({
         where: {
         refreshToken: tokenHash,
+        },
+      });*/
+
+      const session =
+        await prisma.session.findFirst({
+          where: {
+          refreshToken: tokenHash,
+        },
+          include: {
+            user: true,
         },
       });
 
@@ -335,7 +345,7 @@ export const refreshTokenController =
           roleName
         );
 
-      const newRefreshToken =
+      /*const newRefreshToken =
         generateRefreshToken();
 
       await prisma.session.update({
@@ -346,6 +356,25 @@ export const refreshTokenController =
           refreshToken:
             newRefreshToken,
         },
+      });*/
+
+      const newRefreshToken =
+        generateRefreshToken();
+
+      const newRefreshTokenHash =
+        crypto
+          .createHash("sha256")
+          .update(newRefreshToken)
+          .digest("hex");
+
+        await prisma.session.update({
+          where: {
+          id: session.id,
+        },
+          data: {
+            refreshToken:
+              newRefreshTokenHash,
+          },
       });
 
       return res.json({
