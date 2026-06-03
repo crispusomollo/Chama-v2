@@ -16,10 +16,17 @@ import {
 
 const router = express.Router();
 
-router.get(
+/*router.get(
   "/",
   authenticate,
   authorizePermissions("user.read"),
+  getUsersController
+);*/
+
+router.get(
+  "/",
+  authenticate,
+  authorizePermissions("user.view"),
   getUsersController
 );
 

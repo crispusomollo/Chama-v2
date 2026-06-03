@@ -18,6 +18,11 @@ import {
   authorizePermissions,
 } from "../../middleware/permission.middleware.js";
 
+/*import {
+  getUserPermissions,
+  getUserRoles,
+} from "../../services/security/permission.service.js";*/
+
 const router = express.Router();
 
 console.log("AUTH ROUTES LOADED");
@@ -68,6 +73,12 @@ router.post(
   ),
   unlockUserController
 );
+
+/*router.get(
+  "/permissions",
+  authenticate,
+  getMyPermissionsController
+);*/
 
 
 export default router;

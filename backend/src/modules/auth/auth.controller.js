@@ -13,6 +13,7 @@ import {
 import { logAudit }
   from "../../utils/audit.js";
 
+
 export const registerController = async (
   req,
   res,
@@ -461,7 +462,7 @@ export const getMeController =
   };
 
 
-  export const getSessionsController =
+export const getSessionsController =
   async (req, res, next) => {
     try {
       const sessions =
